@@ -121,9 +121,9 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-white">
       {/* Sidebar */}
-      <div className="w-72 flex-shrink-0">
+      <div className="w-80 border-r border-gray-200 flex-shrink-0">
         <HistorySidebar
           onSelectAnalysis={handleSelectAnalysis}
           refreshTrigger={refreshHistory}
@@ -131,36 +131,64 @@ export default function Home() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-auto bg-gradient-to-br from-gray-50 to-slate-50">
-        <div className="max-w-4xl mx-auto px-12 py-16">
-          {/* Header */}
-          <div className="mb-12 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-full mb-6">
-              <div className="w-2 h-2 bg-[--accent] rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-[--accent]">Propulsé par l'IA</span>
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-5xl mx-auto px-8 py-12">
+          {/* Hero Section - Only when no analysis */}
+          {!currentAnalysis && !isAnalyzing && !error && (
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium mb-6">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                </span>
+                Propulsé par l'IA
+              </div>
+
+              <h1 className="text-6xl font-bold tracking-tight text-gray-900 mb-6">
+                Analysez vos appels à projet
+                <br />
+                <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  en 2 minutes
+                </span>
+              </h1>
+
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-12">
+                Transformez 60 minutes de lecture en une fiche de décision claire et actionnelle.
+                Notre IA analyse votre PDF et extrait toutes les informations clés.
+              </p>
+
+              {/* Stats */}
+              <div className="flex justify-center gap-12 mb-16">
+                <div>
+                  <div className="text-3xl font-bold text-gray-900">2 min</div>
+                  <div className="text-sm text-gray-600">Temps d'analyse</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-gray-900">95%</div>
+                  <div className="text-sm text-gray-600">Précision</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-gray-900">6</div>
+                  <div className="text-sm text-gray-600">Sections analysées</div>
+                </div>
+              </div>
             </div>
-            <h1 className="text-5xl font-bold text-[--foreground] mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Grant AI Assistant
-            </h1>
-            <p className="text-[--muted] text-lg max-w-2xl mx-auto">
-              Transformez 60 minutes de lecture en 2 minutes d'analyse claire et actionnelle
-            </p>
-          </div>
+          )}
 
           {/* Error message */}
           {error && (
-            <div className="mb-6 p-5 bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-xl shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
                   <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-red-900 mb-2">{error}</p>
+                  <p className="text-sm font-medium text-red-900">{error}</p>
                   <button
                     onClick={() => setError(null)}
-                    className="text-sm text-red-600 hover:text-red-700 font-medium"
+                    className="text-sm text-red-700 hover:text-red-800 mt-1 font-medium"
                   >
                     Fermer
                   </button>
@@ -172,54 +200,45 @@ export default function Home() {
           {/* Upload zone - shown when no analysis */}
           {!currentAnalysis && !isAnalyzing && (
             <div
-              className={`card-hover p-16 text-center transition-all ${
+              className={`relative group border-2 border-dashed rounded-2xl p-16 text-center transition-all ${
                 isDragging
-                  ? 'border-[--accent] bg-gradient-to-br from-indigo-50 to-purple-50 scale-105'
-                  : ''
+                  ? 'border-indigo-500 bg-indigo-50 scale-105'
+                  : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
               }`}
               onDragEnter={handleDragEnter}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
-              <div className="max-w-lg mx-auto">
-                <div className="upload-icon mb-8">
-                  <div className="w-24 h-24 mx-auto bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl blur-xl"></div>
-                    <svg className="w-12 h-12 text-[--accent] relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                  </div>
+              <div className="max-w-md mx-auto">
+                <div className="mb-6">
+                  <svg className="w-16 h-16 mx-auto text-gray-400 group-hover:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-[--foreground] mb-2">
-                      Déposez votre PDF d'appel à projet
-                    </h3>
-                    <p className="text-[--muted] text-base">
-                      ou{' '}
-                      <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="text-[--accent] hover:text-[--accent-hover] font-medium transition-colors underline decoration-2 underline-offset-2"
-                      >
-                        parcourez vos fichiers
-                      </button>
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center gap-6 text-sm text-[--muted] pt-4">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <span>Format PDF</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Max. 10 MB</span>
-                    </div>
-                  </div>
+
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Glissez-déposez votre PDF
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  ou{' '}
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-indigo-600 hover:text-indigo-700 font-medium"
+                  >
+                    parcourez vos fichiers
+                  </button>
+                </p>
+
+                <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
+                  <span className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    PDF uniquement
+                  </span>
+                  <span>•</span>
+                  <span>Max 10 MB</span>
                 </div>
               </div>
               <input
@@ -234,42 +253,30 @@ export default function Home() {
 
           {/* Analyzing state */}
           {isAnalyzing && (
-            <div className="card p-16 text-center">
-              <div className="max-w-md mx-auto space-y-8">
-                <div className="relative">
-                  <div className="w-24 h-24 mx-auto bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/30 to-purple-500/30 rounded-2xl blur-xl animate-pulse"></div>
-                    <div className="w-12 h-12 border-4 border-[--accent] border-t-transparent rounded-full animate-spin relative z-10" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xl font-semibold text-[--foreground] mb-2">
-                    Analyse en cours...
-                  </p>
-                  <p className="text-[--muted]">
-                    Notre IA examine votre document pour extraire les informations clés
-                  </p>
-                </div>
-                <div className="flex items-center justify-center gap-1">
-                  <div className="w-2 h-2 bg-[--accent] rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                  <div className="w-2 h-2 bg-[--accent] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2 h-2 bg-[--accent] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                </div>
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-6">
+                <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
               </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Analyse en cours...
+              </h3>
+              <p className="text-gray-600">
+                Notre IA examine votre document
+              </p>
             </div>
           )}
 
           {/* Decision sheet */}
           {currentAnalysis && !isAnalyzing && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Action bar */}
-              <div className="flex items-center justify-between pb-6">
+              <div className="flex items-center justify-between">
                 <button
                   onClick={() => {
                     setCurrentAnalysis(null);
                     setError(null);
                   }}
-                  className="text-sm text-[--muted] hover:text-[--foreground] flex items-center gap-2 transition-colors font-medium"
+                  className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -278,7 +285,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="btn btn-primary"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
