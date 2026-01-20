@@ -14,7 +14,6 @@ export default function HistorySidebar({ onSelectAnalysis, refreshTrigger }: His
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Fetch history from API
   const fetchHistory = async () => {
     try {
       setLoading(true);
@@ -35,16 +34,14 @@ export default function HistorySidebar({ onSelectAnalysis, refreshTrigger }: His
     }
   };
 
-  // Fetch on mount and when refreshTrigger changes
   useEffect(() => {
     fetchHistory();
   }, [refreshTrigger]);
 
-  // Delete an analysis
   const handleDelete = async (id: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent selection when clicking delete
+    event.stopPropagation();
 
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette analyse ?')) {
+    if (!confirm('Supprimer cette analyse ?')) {
       return;
     }
 
@@ -57,10 +54,8 @@ export default function HistorySidebar({ onSelectAnalysis, refreshTrigger }: His
         throw new Error('Erreur lors de la suppression');
       }
 
-      // Refresh the list
       await fetchHistory();
 
-      // Clear selection if the deleted item was selected
       if (selectedId === id) {
         setSelectedId(null);
       }
@@ -69,32 +64,30 @@ export default function HistorySidebar({ onSelectAnalysis, refreshTrigger }: His
     }
   };
 
-  // Handle selection
   const handleSelect = (analysis: GrantAnalysis) => {
     setSelectedId(analysis.id);
     onSelectAnalysis(analysis);
   };
 
-  // Get badge styling for recommendation
   const getRecommendationBadge = (recommendation: string) => {
     switch (recommendation) {
       case 'worth-pursuing':
-        return { label: '✅ À creuser', class: 'bg-green-100 text-green-800' };
+        return { label: 'À creuser', class: 'bg-emerald-50 text-emerald-700' };
       case 'needs-verification':
-        return { label: '⚠️ À vérifier', class: 'bg-yellow-100 text-yellow-800' };
+        return { label: 'À vérifier', class: 'bg-amber-50 text-amber-700' };
       case 'skip':
-        return { label: '❌ À ignorer', class: 'bg-red-100 text-red-800' };
+        return { label: 'À ignorer', class: 'bg-red-50 text-red-700' };
       default:
-        return { label: recommendation, class: 'bg-gray-100 text-gray-800' };
+        return { label: recommendation, class: 'bg-gray-50 text-gray-700' };
     }
   };
 
   return (
-    <div className="h-full bg-gray-50 border-r border-gray-200 flex flex-col">
+    <div className="h-full flex flex-col bg-[--background]">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-white">
-        <h2 className="text-lg font-semibold text-gray-900">Historique</h2>
-        <p className="text-sm text-gray-500 mt-1">
+      <div className="p-4 border-b border-[--border]">
+        <h2 className="text-sm font-semibold text-[--foreground]">Historique</h2>
+        <p className="text-xs text-[--muted] mt-0.5">
           {analyses.length} analyse{analyses.length !== 1 ? 's' : ''}
         </p>
       </div>
@@ -102,18 +95,18 @@ export default function HistorySidebar({ onSelectAnalysis, refreshTrigger }: His
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {loading && (
-          <div className="p-4 text-center text-gray-500">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-2 text-sm">Chargement...</p>
+          <div className="p-6 flex flex-col items-center">
+            <div className="w-6 h-6 border-2 border-[--accent] border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-3 text-xs text-[--muted]">Chargement...</p>
           </div>
         )}
 
         {error && (
-          <div className="p-4 text-center">
-            <p className="text-red-600 text-sm">{error}</p>
+          <div className="p-4">
+            <p className="text-xs text-red-600 mb-2">{error}</p>
             <button
               onClick={fetchHistory}
-              className="mt-2 text-blue-500 hover:text-blue-700 text-sm underline"
+              className="text-xs text-[--accent] hover:underline"
             >
               Réessayer
             </button>
@@ -121,55 +114,54 @@ export default function HistorySidebar({ onSelectAnalysis, refreshTrigger }: His
         )}
 
         {!loading && !error && analyses.length === 0 && (
-          <div className="p-4 text-center text-gray-500">
-            <p className="text-sm">Aucune analyse pour le moment</p>
-            <p className="text-xs mt-1">Uploadez un PDF pour commencer</p>
+          <div className="p-6 text-center">
+            <svg className="w-12 h-12 mx-auto text-[--muted] opacity-30 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p className="text-xs text-[--muted]">Aucune analyse</p>
           </div>
         )}
 
         {!loading && !error && analyses.length > 0 && (
-          <div className="divide-y divide-gray-200">
+          <div className="py-2">
             {analyses.map((analysis) => {
               const badge = getRecommendationBadge(analysis.recommendation);
               const isSelected = selectedId === analysis.id;
 
               return (
-                <div
+                <button
                   key={analysis.id}
                   onClick={() => handleSelect(analysis)}
-                  className={`p-4 cursor-pointer transition-colors ${
+                  className={`w-full px-3 py-2.5 text-left transition-colors ${
                     isSelected
-                      ? 'bg-blue-50 border-l-4 border-blue-500'
-                      : 'hover:bg-gray-100'
+                      ? 'bg-[--hover]'
+                      : 'hover:bg-[--hover]/50'
                   }`}
                 >
-                  <div className="flex justify-between items-start gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-gray-900 truncate">
-                        {analysis.title}
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(analysis.uploadDate).toLocaleDateString('fr-FR', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </p>
-                    </div>
+                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                    <h3 className="text-sm font-medium text-[--foreground] line-clamp-2 flex-1">
+                      {analysis.title}
+                    </h3>
                     <button
                       onClick={(e) => handleDelete(analysis.id, e)}
-                      className="text-red-500 hover:text-red-700 transition-colors flex-shrink-0"
+                      className="p-0.5 hover:bg-white rounded opacity-0 group-hover:opacity-100 transition-opacity"
                       title="Supprimer"
                     >
-                      🗑️
+                      <svg className="w-3.5 h-3.5 text-[--muted] hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
                     </button>
                   </div>
-                  <div className="mt-2">
-                    <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${badge.class}`}>
-                      {badge.label}
-                    </span>
-                  </div>
-                </div>
+                  <p className="text-xs text-[--muted] mb-2">
+                    {new Date(analysis.uploadDate).toLocaleDateString('fr-FR', {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                  </p>
+                  <span className={`inline-block px-2 py-0.5 rounded text-xs ${badge.class}`}>
+                    {badge.label}
+                  </span>
+                </button>
               );
             })}
           </div>

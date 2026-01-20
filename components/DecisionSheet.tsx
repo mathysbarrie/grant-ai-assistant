@@ -17,54 +17,53 @@ export default function DecisionSheet({
 }: DecisionSheetProps) {
   const { decisionSheet, personalNotes } = analysis;
 
-  // Badge styles based on verdict/decision
-  const getEligibilityBadgeClass = (verdict: string) => {
+  const getVerdictStyle = (verdict: string) => {
     switch (verdict) {
       case 'YES':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'NO':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-red-50 text-red-700 border-red-200';
       case 'UNCERTAIN':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
-  const getComplexityBadgeClass = (complexity: string) => {
+  const getComplexityStyle = (complexity: string) => {
     switch (complexity) {
       case 'Low':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'Medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'Heavy':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-red-50 text-red-700 border-red-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
-  const getRecommendationBadgeClass = (decision: string) => {
+  const getRecommendationStyle = (decision: string) => {
     switch (decision) {
       case 'worth-pursuing':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'needs-verification':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'skip':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-red-50 text-red-700 border-red-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
   const getRecommendationLabel = (decision: string) => {
     switch (decision) {
       case 'worth-pursuing':
-        return '✅ À creuser';
+        return 'À creuser';
       case 'needs-verification':
-        return '⚠️ À vérifier';
+        return 'À vérifier';
       case 'skip':
-        return '❌ À ignorer';
+        return 'À ignorer';
       default:
         return decision;
     }
@@ -73,166 +72,155 @@ export default function DecisionSheet({
   const getVerdictLabel = (verdict: string) => {
     switch (verdict) {
       case 'YES':
-        return '✅ OUI';
+        return 'Éligible';
       case 'NO':
-        return '❌ NON';
+        return 'Non éligible';
       case 'UNCERTAIN':
-        return '⚠️ INCERTAIN';
+        return 'Incertain';
       default:
         return verdict;
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
-      {/* Header with title and action buttons */}
-      <div className="flex justify-between items-start border-b pb-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">{analysis.title}</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Analysé le {new Date(analysis.uploadDate).toLocaleDateString('fr-FR')}
-          </p>
+    <div className="notion-card">
+      {/* Header */}
+      <div className="p-8 pb-0">
+        <div className="flex items-start justify-between mb-2">
+          <h1 className="text-2xl font-semibold text-[--foreground]">{analysis.title}</h1>
+          <div className="flex gap-2">
+            {onCopyToClipboard && (
+              <button
+                onClick={onCopyToClipboard}
+                className="p-2 hover:bg-[--hover] rounded transition-colors"
+                title="Copier"
+              >
+                <svg className="w-5 h-5 text-[--muted]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                </svg>
+              </button>
+            )}
+            {onExportPDF && (
+              <button
+                onClick={onExportPDF}
+                className="p-2 hover:bg-[--hover] rounded transition-colors"
+                title="Exporter PDF"
+              >
+                <svg className="w-5 h-5 text-[--muted]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
-        <div className="flex gap-2">
-          {onCopyToClipboard && (
-            <button
-              onClick={onCopyToClipboard}
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            >
-              📋 Copier
-            </button>
-          )}
-          {onExportPDF && (
-            <button
-              onClick={onExportPDF}
-              className="px-4 py-2 text-sm bg-gray-700 text-white rounded hover:bg-gray-800 transition"
-            >
-              📄 Exporter PDF
-            </button>
-          )}
-        </div>
+        <p className="text-sm text-[--muted]">
+          Analysé le {new Date(analysis.uploadDate).toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          })}
+        </p>
       </div>
 
-      {/* Section 1: Executive Summary */}
-      <section className="space-y-2">
-        <h3 className="text-lg font-semibold text-gray-900 border-l-4 border-blue-500 pl-3">
-          1. Résumé exécutif
-        </h3>
-        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-          {decisionSheet.executiveSummary}
-        </p>
-      </section>
+      <div className="notion-divider mx-8" />
 
-      {/* Section 2: Eligibility */}
-      <section className="space-y-2 bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 border-l-4 border-green-500 pl-3">
-          2. Éligibilité
-        </h3>
-        <div className="flex items-center gap-3">
-          <span
-            className={`px-4 py-2 rounded-full border font-semibold ${getEligibilityBadgeClass(
-              decisionSheet.eligibility.verdict
-            )}`}
-          >
+      {/* Content */}
+      <div className="p-8 space-y-8">
+        {/* Section 1: Executive Summary */}
+        <section>
+          <h2 className="text-sm font-semibold text-[--foreground] mb-3">Résumé exécutif</h2>
+          <p className="text-sm text-[--foreground] leading-relaxed whitespace-pre-wrap">
+            {decisionSheet.executiveSummary}
+          </p>
+        </section>
+
+        {/* Section 2: Eligibility */}
+        <section>
+          <h2 className="text-sm font-semibold text-[--foreground] mb-3">Éligibilité</h2>
+          <span className={`notion-badge border ${getVerdictStyle(decisionSheet.eligibility.verdict)}`}>
             {getVerdictLabel(decisionSheet.eligibility.verdict)}
           </span>
-        </div>
-        <p className="text-gray-700 mt-3 whitespace-pre-wrap leading-relaxed">
-          {decisionSheet.eligibility.justification}
-        </p>
-      </section>
+          <p className="text-sm text-[--foreground] leading-relaxed mt-3 whitespace-pre-wrap">
+            {decisionSheet.eligibility.justification}
+          </p>
+        </section>
 
-      {/* Section 3: Financial Terms */}
-      <section className="space-y-2">
-        <h3 className="text-lg font-semibold text-gray-900 border-l-4 border-purple-500 pl-3">
-          3. Termes financiers
-        </h3>
-        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-          {decisionSheet.financialTerms}
-        </p>
-      </section>
+        {/* Section 3: Financial Terms */}
+        <section>
+          <h2 className="text-sm font-semibold text-[--foreground] mb-3">Termes financiers</h2>
+          <p className="text-sm text-[--foreground] leading-relaxed whitespace-pre-wrap">
+            {decisionSheet.financialTerms}
+          </p>
+        </section>
 
-      {/* Section 4: Deadlines & Workload */}
-      <section className="space-y-2 bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 border-l-4 border-orange-500 pl-3">
-          4. Délais & Charge de travail
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-          <div>
-            <p className="text-sm text-gray-600">Deadline de dépôt</p>
-            <p className="font-semibold text-gray-900">{decisionSheet.deadlinesWorkload.deadline}</p>
+        {/* Section 4: Deadlines & Workload */}
+        <section>
+          <h2 className="text-sm font-semibold text-[--foreground] mb-3">Délais & Charge de travail</h2>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-[--muted] mb-1">Deadline de dépôt</p>
+                <p className="text-sm font-medium text-[--foreground]">{decisionSheet.deadlinesWorkload.deadline}</p>
+              </div>
+              <div>
+                <p className="text-xs text-[--muted] mb-1">Période du projet</p>
+                <p className="text-sm font-medium text-[--foreground]">{decisionSheet.deadlinesWorkload.projectPeriod}</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs text-[--muted] mb-2">Complexité administrative</p>
+              <span className={`notion-badge border ${getComplexityStyle(decisionSheet.deadlinesWorkload.complexity)}`}>
+                {decisionSheet.deadlinesWorkload.complexity}
+              </span>
+              {decisionSheet.deadlinesWorkload.estimatedHours && (
+                <span className="ml-2 text-sm text-[--muted]">
+                  ~{decisionSheet.deadlinesWorkload.estimatedHours}h estimées
+                </span>
+              )}
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-600">Période du projet</p>
-            <p className="font-semibold text-gray-900">{decisionSheet.deadlinesWorkload.projectPeriod}</p>
-          </div>
-        </div>
-        <div className="mt-3">
-          <p className="text-sm text-gray-600 mb-2">Complexité administrative</p>
-          <span
-            className={`px-4 py-2 rounded-full border font-semibold inline-block ${getComplexityBadgeClass(
-              decisionSheet.deadlinesWorkload.complexity
-            )}`}
-          >
-            {decisionSheet.deadlinesWorkload.complexity}
-          </span>
-          {decisionSheet.deadlinesWorkload.estimatedHours && (
-            <span className="ml-3 text-gray-700">
-              (~{decisionSheet.deadlinesWorkload.estimatedHours}h estimées)
-            </span>
-          )}
-        </div>
-      </section>
+        </section>
 
-      {/* Section 5: Blockers & Risks */}
-      <section className="space-y-2">
-        <h3 className="text-lg font-semibold text-gray-900 border-l-4 border-red-500 pl-3">
-          5. Points bloquants & Risques
-        </h3>
-        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-          {decisionSheet.blockersRisks}
-        </p>
-      </section>
+        {/* Section 5: Blockers & Risks */}
+        <section>
+          <h2 className="text-sm font-semibold text-[--foreground] mb-3">Points bloquants & Risques</h2>
+          <p className="text-sm text-[--foreground] leading-relaxed whitespace-pre-wrap">
+            {decisionSheet.blockersRisks}
+          </p>
+        </section>
 
-      {/* Section 6: Final Recommendation */}
-      <section className="space-y-3 bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg border-2 border-gray-300">
-        <h3 className="text-xl font-bold text-gray-900 border-l-4 border-indigo-500 pl-3">
-          6. Recommandation finale
-        </h3>
-        <div className="flex items-center gap-3">
-          <span
-            className={`px-6 py-3 rounded-lg border-2 font-bold text-lg ${getRecommendationBadgeClass(
-              decisionSheet.finalRecommendation.decision
-            )}`}
-          >
+        {/* Section 6: Final Recommendation */}
+        <section className="p-6 bg-[--hover] rounded-lg border border-[--border]">
+          <h2 className="text-sm font-semibold text-[--foreground] mb-3">Recommandation finale</h2>
+          <span className={`notion-badge border ${getRecommendationStyle(decisionSheet.finalRecommendation.decision)} text-base px-3 py-1`}>
             {getRecommendationLabel(decisionSheet.finalRecommendation.decision)}
           </span>
-        </div>
-        <div className="mt-4">
-          <p className="text-sm text-gray-600 mb-2 font-semibold">Raisons :</p>
-          <ul className="list-disc list-inside space-y-1">
-            {decisionSheet.finalRecommendation.reasons.map((reason, index) => (
-              <li key={index} className="text-gray-700">
-                {reason}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* Personal Notes Section */}
-      {onNotesChange && (
-        <section className="space-y-2 border-t pt-4">
-          <h3 className="text-lg font-semibold text-gray-900">Notes personnelles</h3>
-          <textarea
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-            rows={4}
-            placeholder="Ajoutez vos notes personnelles ici..."
-            defaultValue={personalNotes || ''}
-            onBlur={(e) => onNotesChange(e.target.value)}
-          />
+          <div className="mt-4">
+            <p className="text-xs text-[--muted] mb-2">Raisons</p>
+            <ul className="space-y-1.5">
+              {decisionSheet.finalRecommendation.reasons.map((reason, index) => (
+                <li key={index} className="flex items-start gap-2 text-sm text-[--foreground]">
+                  <span className="text-[--muted] mt-0.5">•</span>
+                  <span className="flex-1">{reason}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
-      )}
+
+        {/* Personal Notes */}
+        {onNotesChange && (
+          <section>
+            <h2 className="text-sm font-semibold text-[--foreground] mb-3">Notes personnelles</h2>
+            <textarea
+              className="notion-input min-h-[120px] resize-y text-sm"
+              placeholder="Ajoutez vos notes ici..."
+              defaultValue={personalNotes || ''}
+              onBlur={(e) => onNotesChange(e.target.value)}
+            />
+          </section>
+        )}
+      </div>
     </div>
   );
 }

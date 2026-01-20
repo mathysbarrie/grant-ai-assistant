@@ -14,17 +14,14 @@ export default function Home() {
   const [refreshHistory, setRefreshHistory] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle file upload
   const handleFileUpload = async (file: File) => {
     if (!file) return;
 
-    // Validate file type
     if (file.type !== 'application/pdf') {
       setError('Le fichier doit être un PDF');
       return;
     }
 
-    // Validate file size (10MB max)
     if (file.size > 10 * 1024 * 1024) {
       setError('Le fichier ne doit pas dépasser 10MB');
       return;
@@ -50,7 +47,7 @@ export default function Home() {
 
       const analysis: GrantAnalysis = await response.json();
       setCurrentAnalysis(analysis);
-      setRefreshHistory(prev => prev + 1); // Trigger history refresh
+      setRefreshHistory(prev => prev + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
     } finally {
@@ -58,7 +55,6 @@ export default function Home() {
     }
   };
 
-  // Handle file input change
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -66,7 +62,6 @@ export default function Home() {
     }
   };
 
-  // Handle drag events
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -95,13 +90,11 @@ export default function Home() {
     }
   };
 
-  // Handle selecting analysis from history
   const handleSelectAnalysis = (analysis: GrantAnalysis) => {
     setCurrentAnalysis(analysis);
     setError(null);
   };
 
-  // Handle updating notes
   const handleNotesChange = async (notes: string) => {
     if (!currentAnalysis) return;
 
@@ -118,7 +111,6 @@ export default function Home() {
         throw new Error('Erreur lors de la sauvegarde des notes');
       }
 
-      // Update local state
       setCurrentAnalysis({
         ...currentAnalysis,
         personalNotes: notes,
@@ -129,9 +121,9 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-[--background]">
       {/* Sidebar */}
-      <div className="w-80 flex-shrink-0">
+      <div className="w-64 border-r border-[--border] flex-shrink-0">
         <HistorySidebar
           onSelectAnalysis={handleSelectAnalysis}
           refreshTrigger={refreshHistory}
@@ -140,43 +132,69 @@ export default function Home() {
 
       {/* Main content */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto p-8">
+        <div className="max-w-4xl mx-auto px-12 py-16">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900">Grant AI Assistant</h1>
-            <p className="text-gray-600 mt-2">
-              Analysez vos appels à projets en 2 minutes grâce à l'IA
+          <div className="mb-12">
+            <h1 className="text-3xl font-semibold text-[--foreground] mb-2">
+              Grant AI Assistant
+            </h1>
+            <p className="text-[--muted] text-base">
+              Analysez vos appels à projets en 2 minutes
             </p>
           </div>
 
-          {/* Upload zone - shown when no analysis is displayed or when analyzing */}
+          {/* Error message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg">
+              <div className="flex items-start gap-3">
+                <span className="text-red-500 text-lg">⚠</span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-red-900">{error}</p>
+                  <button
+                    onClick={() => setError(null)}
+                    className="text-xs text-red-600 hover:text-red-700 mt-1 underline"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Upload zone - shown when no analysis */}
           {!currentAnalysis && !isAnalyzing && (
             <div
-              className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+              className={`notion-card p-12 text-center transition-all ${
                 isDragging
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-300 hover:border-gray-400'
+                  ? 'border-[--accent] bg-blue-50/30'
+                  : 'hover:border-[--muted]'
               }`}
               onDragEnter={handleDragEnter}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
-              <div className="space-y-4">
-                <div className="text-6xl">📄</div>
-                <div>
-                  <p className="text-lg font-semibold text-gray-700">
-                    Glissez-déposez votre PDF ici
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">ou</p>
+              <div className="max-w-md mx-auto space-y-6">
+                <div className="w-16 h-16 mx-auto bg-[--hover] rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-[--muted]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
                 </div>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold"
-                >
-                  Choisir un fichier
-                </button>
-                <p className="text-xs text-gray-500">
+                <div>
+                  <p className="text-base font-medium text-[--foreground] mb-1">
+                    Glissez votre PDF ici
+                  </p>
+                  <p className="text-sm text-[--muted]">
+                    ou{' '}
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-[--accent] hover:underline font-medium"
+                    >
+                      parcourez vos fichiers
+                    </button>
+                  </p>
+                </div>
+                <p className="text-xs text-[--muted]">
                   PDF uniquement • Maximum 10MB
                 </p>
               </div>
@@ -192,41 +210,45 @@ export default function Home() {
 
           {/* Analyzing state */}
           {isAnalyzing && (
-            <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mx-auto"></div>
-              <p className="mt-6 text-lg font-semibold text-gray-700">
-                Analyse en cours...
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                L'IA analyse votre document, cela peut prendre 10-30 secondes
-              </p>
-            </div>
-          )}
-
-          {/* Error message */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-800 font-semibold">❌ Erreur</p>
-              <p className="text-red-700 text-sm mt-1">{error}</p>
-              <button
-                onClick={() => setError(null)}
-                className="mt-3 text-red-600 hover:text-red-800 text-sm underline"
-              >
-                Fermer
-              </button>
+            <div className="notion-card p-12 text-center">
+              <div className="max-w-md mx-auto space-y-6">
+                <div className="w-16 h-16 mx-auto bg-[--hover] rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 border-2 border-[--accent] border-t-transparent rounded-full animate-spin" />
+                </div>
+                <div>
+                  <p className="text-base font-medium text-[--foreground] mb-1">
+                    Analyse en cours...
+                  </p>
+                  <p className="text-sm text-[--muted]">
+                    L'IA analyse votre document
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
           {/* Decision sheet */}
           {currentAnalysis && !isAnalyzing && (
             <div className="space-y-4">
-              {/* New analysis button */}
-              <div className="flex justify-end">
+              {/* Action bar */}
+              <div className="flex items-center justify-between pb-4">
+                <button
+                  onClick={() => {
+                    setCurrentAnalysis(null);
+                    setError(null);
+                  }}
+                  className="text-sm text-[--muted] hover:text-[--foreground] flex items-center gap-1"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Retour
+                </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm font-semibold"
+                  className="notion-button-secondary text-sm"
                 >
-                  ➕ Nouvelle analyse
+                  Nouvelle analyse
                 </button>
                 <input
                   ref={fileInputRef}
