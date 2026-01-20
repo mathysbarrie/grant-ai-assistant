@@ -1,9 +1,17 @@
 import Groq from 'groq-sdk';
 import { DecisionSheet } from './types';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+// Lazy initialization of Groq client to avoid build-time errors
+let groqClient: Groq | null = null;
+
+function getGroqClient(): Groq {
+  if (!groqClient) {
+    groqClient = new Groq({
+      apiKey: process.env.GROQ_API_KEY,
+    });
+  }
+  return groqClient;
+}
 
 const SYSTEM_PROMPT = `Tu es un expert senior en financements publics français pour collectivités territoriales.
 Ta mission est d'aider un chargé de mission à décider rapidement si un appel à projets mérite d'être poursuivi.
@@ -45,6 +53,7 @@ Contexte: Commune de 100 000 habitants.`;
  */
 export async function analyzeGrant(pdfText: string): Promise<DecisionSheet> {
   try {
+    const groq = getGroqClient();
     const completion = await groq.chat.completions.create({
       messages: [
         {
