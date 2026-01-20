@@ -6,6 +6,9 @@
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
+    // Import canvas to provide DOM APIs for pdf-parse
+    await import('canvas');
+
     // Dynamic import with type assertion for CommonJS module
     const pdfParse = (await import('pdf-parse')) as any;
     const parseFn = typeof pdfParse === 'function' ? pdfParse : pdfParse.default;
